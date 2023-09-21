@@ -96,7 +96,10 @@ class Agent():
 			pygame.Vector2.scale_to_length(scaledVel, Constants.VECTOR_LINE_LENGTH)
 		
 		lineEnd = pygame.Vector2(self.updateCenter().x + scaledVel.x, self.updateCenter().y + scaledVel.y)
-		pygame.draw.line(screen, (0, 0, 255), lineStart, lineEnd, 3)
+
+		#draw velocity lines
+		if Constants.DEBUG_VELOCITY:
+			pygame.draw.line(screen, (0, 0, 255), lineStart, lineEnd, 3)
 		
 		#blit the dog/sheep image
 		screen.blit(self.surf, [upperLeft.x, upperLeft.y])
@@ -108,7 +111,8 @@ class Agent():
 		self.surf = self.updateSurf()
 		self.upperLeft = self.updateUpperLeft()
 		self.boundingRect = self.updateBoundingRect()
-		pygame.draw.rect(screen, (0,0,0), self.boundingRect, 1)
+		if Constants.DEBUG_BOUNDING_RECTS:
+			pygame.draw.rect(screen, (0,0,0), self.boundingRect, 1)
 
 	def computeBoundaryForces(self, bounds, screen):	
 		boundsNearbyList = []
@@ -141,7 +145,8 @@ class Agent():
 		#draw a force line between boundary and agent
 		if len(boundsNearbyList) > 0:
 			for bound in boundsNearbyList:
-				pygame.draw.line(screen, (255, 0, 0), self.center, bound, 1)
+				if Constants.DEBUG_BOUNDARIES:
+					pygame.draw.line(screen, (255, 0, 0), self.center, bound, 1)
 
 		return boundsSum
 		
@@ -150,9 +155,6 @@ class Agent():
 
 		#move the agent
 		self.pos += pygame.Vector2.normalize(self.vel) * self.spd
-		
-		# ensure agent stays within the world
-		#self.computeBoundaryForces(bounds, screen)		
 
 		# update agent's position
 		self.boundingRect = self.updateBoundingRect()

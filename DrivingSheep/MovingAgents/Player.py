@@ -25,7 +25,10 @@ class Dog(Agent):
 			self.targetAgent = max([e for e in enemies], key=lambda e: self.pos.distance_to(pygame.math.Vector2(e.pos.x, e.pos.y)))
 
 	def draw(self, screen):
-		pygame.draw.line(screen, (255, 0, 0), self.center, self.targetAgent.center, 3)
+
+		#toggle line from dog to tracked sheep
+		if Constants.DEBUG_DOG_INFLUENCE:
+			pygame.draw.line(screen, (255, 0, 0), self.center, self.targetAgent.center, 3)
 		super().draw(screen)
 
 	def update(self, bounds, screen, enemies: List):

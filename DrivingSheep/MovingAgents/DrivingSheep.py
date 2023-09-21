@@ -25,6 +25,13 @@ def handleDebugging():
 	#Handle the Debugging for Forces
 	events = pygame.event.get()
 	for event in events:
+
+		#if the player quits the game
+		if event.type == QUIT:
+			pygame.quit()
+			quit()
+
+		#if the player presses a debug key (1-0 on keyboard)
 		if event.type == pygame.KEYUP:
 
 			# Toggle Dog Influence
@@ -78,17 +85,10 @@ def handleDebugging():
 				print("Toggle Bounding Box Lines", Constants.DEBUG_BOUNDING_RECTS)
 
 #main gameplay loop
-hasQuit = False
-while not hasQuit:
-
+while True:
+	
+	#event handler
 	handleDebugging()
-
-	# event handler
-	for event in pygame.event.get():
-
-		#quit the game
-		if event.type == QUIT:
-			hasQuit = True
 				
 	#make screen cornflower blue
 	screen.fill(Constants.BACKGROUND_COLOR)
@@ -112,7 +112,3 @@ while not hasQuit:
 
 	#constrain to 60 fps
 	Constants.CLOCK.tick(60)
-
-#quit the game
-pygame.quit()
-quit()
