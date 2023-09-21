@@ -1,3 +1,4 @@
+from ast import Constant
 from dis import dis
 import pygame
 from pygame.locals import *
@@ -50,8 +51,10 @@ class Sheep(Agent):
 		#check if player is close
 		self.isFleeing = self.isPlayerClose(player)
 
-		# get boundary forces for sum
+		# get forces on the sheep
 		boundsForce = self.computeBoundaryForces(bounds, screen)
+		if boundsForce != pygame.Vector2(0,0):
+			pygame.Vector2.normalize(boundsForce)
 
 		# wander if player isn't close
 		if not self.isFleeing:
@@ -70,9 +73,9 @@ class Sheep(Agent):
 				wanderDirForce = wanderDir * Constants.ENEMY_WANDER_FORCE
 				wanderDirForceNorm = pygame.Vector2.normalize(wanderDirForce)
 
-				totalForce = wanderDirForceNorm + boundsForce
+				totalForce = wanderDirForceNorm + (boundsForce * int(Constants.ENABLE_BOUNDARIES))
 			else:
-				totalForce = boundsForce
+				totalForce = boundsForce * int(Constants.ENABLE_BOUNDARIES)
 
 		# otherwise, flee
 		else:
@@ -83,7 +86,7 @@ class Sheep(Agent):
 			#scale direction by the weight of this force to get applied force
 			dirToDogForce = -dirToDog * Constants.ENEMY_FLEE_FORCE
 						
-			totalForce = dirToDogForce + boundsForce
+			totalForce = (dirToDogForce * int(Constants.ENABLE_DOG) + (boundsForce * int(Constants.ENABLE_BOUNDARIES)))
 
 			self.calcTrackingVelocity(player)
 					
@@ -94,7 +97,8 @@ class Sheep(Agent):
 		super().update(bounds, screen)
 
 	def draw(self, screen):
-		if self.isFleeing == True:
-			pygame.draw.line(screen, (0, 0, 255), self.center, self.targetPos, 3)
+		if Constants.DEBUG_DOG_INFLUENCE:
+			if self.isFleeing == True:
+				pygame.draw.line(screen, (0, 0, 255), self.center, self.targetPos, 3)
 
 		super().draw(screen)

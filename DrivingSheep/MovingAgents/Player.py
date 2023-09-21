@@ -34,7 +34,7 @@ class Dog(Agent):
 	def update(self, bounds, screen, enemies: List):
 
 		#get boundary forces
-		boundsForce = self.computeBoundaryForces(bounds, screen)
+		boundsForce = self.computeBoundaryForces(bounds, screen) * int(Constants.ENABLE_BOUNDARIES)
 
 		if pygame.Vector2.length(self.vel) == 0:
 			angle = math.acos(random.randrange(-1, 1))
