@@ -145,17 +145,18 @@ class Sheep(Agent):
 			#scale direction by the weight of this force to get applied force
 			dirToDogForce = dirToDog * Constants.ENEMY_FLEE_FORCE * -1
 						
-			totalForce = (dirToDogForce * int(Constants.ENABLE_DOG) + (boundsForce * int(Constants.ENABLE_BOUNDARIES)))
+			#totalForce = (dirToDogForce * int(Constants.ENABLE_DOG) + (boundsForce * int(Constants.ENABLE_BOUNDARIES)))
 
 			self.calcTrackingVelocity(player)
 			self.vel += totalForce
 		else:
 			self.vel = Vector(0,0)
+			dirToDogForce = Vector(0,0)
 					
 		# prevent sheep from turning on a dime
 		self.clampTurn(Constants.ENEMY_TURN_SPEED, totalForce)
 
-		#totalForce = alignment * Constants.ALIGNMENT_WEIGHT * Constants.ENABLE_ALIGNMENT + separation * Constants.SEPARATION_WEIGHT * Constants.ENABLE_SEPARATION + cohesion * Constants.COHESION_WEIGHT * Constants.ENABLE_COHESION + dirToDogForce * Constants.PLAYER_TO_SHEEP_FORCE * Constants.ENABLE_DOG + boundsForce * Constants.BOUNDARY_FORCE * Constants.ENABLE_BOUNDARIES
+		totalForce = alignment * Constants.ALIGNMENT_WEIGHT * Constants.ENABLE_ALIGNMENT + separation * Constants.SEPARATION_WEIGHT * Constants.ENABLE_SEPARATION + cohesion * Constants.COHESION_WEIGHT * Constants.ENABLE_COHESION + dirToDogForce * Constants.PLAYER_TO_SHEEP_FORCE * Constants.ENABLE_DOG + boundsForce * Constants.BOUNDARY_FORCE * Constants.ENABLE_BOUNDARIES
 		
 		self.vel += totalForce.normalize()
 

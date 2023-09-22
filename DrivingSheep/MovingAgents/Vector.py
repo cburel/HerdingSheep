@@ -16,6 +16,7 @@ class Vector:
 	def __sub__(self,other):
 		return Vector(self.x - other.x, self.y - other.y)
 
+	#taken from the pygame wiki, 2DVectorClass article
 	def __mul__(self, other):
 		if isinstance(other, Vector):
 			return Vector(self.x*other.x, self.y*other.y)
