@@ -46,7 +46,7 @@ class Dog(Agent):
 		# shoutout to Rabbid76 on SO for the lambda fn
 		if self.hasTagged == False:
 			#self.targetAgent = min([e for e in enemies], key=lambda e: self.pos.distance_to(pygame.math.Vector2(e.pos.x, e.pos.y)))
-			self.targetAgent = random.choice(enemies)
+			self.targetAgent = enemies[0]
 
 		#store the calculated, normalized direction to the sheep being tracked
 		dirToSheep = (self.targetAgent.pos - self.pos).normalize()
