@@ -45,7 +45,7 @@ class Sheep(Agent):
 		else:
 			return False
 
-	def calcNeighbors(self, herd):
+	def calcNeighbors(self, herd, screen):
 		self.neighborCount = 0
 		self.neighbors = []
 
@@ -54,6 +54,8 @@ class Sheep(Agent):
 				if (self.center - sheep.pos).length() < Constants.SHEEP_NEIGHBOR_RADIUS:
 					self.neighborCount += 1
 					self.neighbors += [sheep]
+				if Constants.DEBUG_NEIGHBORS:
+					pygame.draw.line(screen, (0, 0, 255), (self.center.x, self.center.y), (sheep.center.x, sheep.center.y), 1)
 
 	def computeAlignment(self):
 		alignment = Vector(0,0)
@@ -64,7 +66,7 @@ class Sheep(Agent):
 		if (self.neighborCount == 0):
 			return alignment
 		else:
-			return alignment.scale(1/self.neighborCount)
+			return alignment.scale(1 / self.neighborCount)
 		
 
 	def computeCohesion(self):
@@ -99,7 +101,7 @@ class Sheep(Agent):
 		#	angle = math.acos(random.randrange(-1, 1))
 		#	self.vel = pygame.Vector2(math.cos(angle), math.sin(angle)) * self.spd
 
-		self.calcNeighbors(herd)
+		self.calcNeighbors(herd, screen)
 
 		alignment = self.computeAlignment().normalize()
 		cohesion = self.computeCohesion().normalize()
