@@ -61,17 +61,18 @@ class Agent():
 		if pygame.Vector2.length(target) == 0:
 			return
 		else:
-			difference = pygame.Vector2.normalize(target) - pygame.Vector2.normalize(curr)
+			if curr != pygame.Vector2(0,0):
+				difference = pygame.Vector2.normalize(target) - pygame.Vector2.normalize(curr)
 
-			# if the length of the difference vector is smaller than the turning speed, the agent can turn as fast
-			length = pygame.Vector2.length(difference)
-			if length < turnSpd:
-				self.vel = target
-			else:
-				difference = pygame.Vector2.normalize(difference)
-				pygame.Vector2.scale_to_length(difference, turnSpd)
-				self.vel += difference
-			self.vel = pygame.Vector2.normalize(self.vel) * self.spd
+				# if the length of the difference vector is smaller than the turning speed, the agent can turn as fast
+				length = pygame.Vector2.length(difference)
+				if length < turnSpd:
+					self.vel = target
+				else:
+					difference = pygame.Vector2.normalize(difference)
+					pygame.Vector2.scale_to_length(difference, turnSpd)
+					self.vel += difference
+				self.vel = pygame.Vector2.normalize(self.vel) * self.spd
 
 	# draw the agent
 	def draw(self, screen):
@@ -154,7 +155,8 @@ class Agent():
 	def update(self, bounds, screen):
 
 		#move the agent
-		self.pos += pygame.Vector2.normalize(self.vel) * self.spd
+		if self.vel != pygame.Vector2(0,0):
+			self.pos += pygame.Vector2.normalize(self.vel) * self.spd
 
 		# update agent's position
 		self.boundingRect = self.updateBoundingRect()

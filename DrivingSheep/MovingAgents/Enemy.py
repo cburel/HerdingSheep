@@ -43,10 +43,10 @@ class Sheep(Agent):
 
 	def update(self, bounds, screen, player):
 
-		# initialize velocity
-		if pygame.Vector2.length(self.vel) == 0:
-			angle = math.acos(random.randrange(-1, 1))
-			self.vel = pygame.Vector2(math.cos(angle), math.sin(angle)) * self.spd
+		## initialize velocity
+		#if pygame.Vector2.length(self.vel) == 0:
+		#	angle = math.acos(random.randrange(-1, 1))
+		#	self.vel = pygame.Vector2(math.cos(angle), math.sin(angle)) * self.spd
 		
 		#check if player is close
 		self.isFleeing = self.isPlayerClose(player)
@@ -56,29 +56,31 @@ class Sheep(Agent):
 		if boundsForce != pygame.Vector2(0,0):
 			pygame.Vector2.normalize(boundsForce)
 
-		# wander if player isn't close
-		if not self.isFleeing:
+		totalForce = boundsForce
 
-			if self.updateDirectionTime() == True:
-				theta = math.radians(random.randrange(-100, 100) / 100)
+		## wander if player isn't close
+		#if not self.isFleeing:
 
-				pickTurn = random.randint(0, 100)
-				if pickTurn < 50:
-					theta += 0
-				else:
-					theta += 180
+		#	if self.updateDirectionTime() == True:
+		#		theta = math.radians(random.randrange(-100, 100) / 100)
 
-				#apply wander force			
-				wanderDir = pygame.Vector2.normalize(self.vel) + pygame.Vector2(math.cos(theta), math.sin(theta))
-				wanderDirForce = wanderDir * Constants.ENEMY_WANDER_FORCE
-				wanderDirForceNorm = pygame.Vector2.normalize(wanderDirForce)
+		#		pickTurn = random.randint(0, 100)
+		#		if pickTurn < 50:
+		#			theta += 0
+		#		else:
+		#			theta += 180
 
-				totalForce = wanderDirForceNorm + (boundsForce * int(Constants.ENABLE_BOUNDARIES))
-			else:
-				totalForce = boundsForce * int(Constants.ENABLE_BOUNDARIES)
+		#		#apply wander force			
+		#		wanderDir = pygame.Vector2.normalize(self.vel) + pygame.Vector2(math.cos(theta), math.sin(theta))
+		#		wanderDirForce = wanderDir * Constants.ENEMY_WANDER_FORCE
+		#		wanderDirForceNorm = pygame.Vector2.normalize(wanderDirForce)
+
+		#		totalForce = wanderDirForceNorm + (boundsForce * int(Constants.ENABLE_BOUNDARIES))
+		#	else:
+		#		totalForce = boundsForce * int(Constants.ENABLE_BOUNDARIES)
 
 		# otherwise, flee
-		else:
+		if self.isFleeing:
 			#apply flee force
 			#store the calculated, normalized direction to the dog
 			dirToDog = pygame.Vector2.normalize(player.pos - self.pos)
@@ -89,6 +91,9 @@ class Sheep(Agent):
 			totalForce = (dirToDogForce * int(Constants.ENABLE_DOG) + (boundsForce * int(Constants.ENABLE_BOUNDARIES)))
 
 			self.calcTrackingVelocity(player)
+			self.vel += totalForce
+		else:
+			self.vel = pygame.Vector2(0,0)
 					
 		# prevent sheep from turning on a dime
 		self.clampTurn(Constants.ENEMY_TURN_SPEED, totalForce)

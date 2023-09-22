@@ -5,12 +5,12 @@
     <ProjectGuid>3dbe437d-bca8-4998-bfcc-612b0c97b085</ProjectGuid>
     <ProjectHome>
     </ProjectHome>
-    <StartupFile>DrivingSheep.py</StartupFile>
+    <StartupFile>HerdingSheep.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
-    <Name>DrivingSheep</Name>
+    <Name>HerdingSheep</Name>
     <RootNamespace>MovingAgents</RootNamespace>
     <IsWindowsApplication>False</IsWindowsApplication>
   </PropertyGroup>
@@ -25,8 +25,8 @@
   <ItemGroup>
     <Compile Include="Agent.py" />
     <Compile Include="Constants.py" />
-    <Compile Include="DrivingSheep.py" />
     <Compile Include="Enemy.py" />
+    <Compile Include="HerdingSheep.py" />
     <Compile Include="Player.py" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
