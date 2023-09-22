@@ -54,8 +54,9 @@ class Sheep(Agent):
 				if (self.center - sheep.pos).length() < Constants.SHEEP_NEIGHBOR_RADIUS:
 					self.neighborCount += 1
 					self.neighbors += [sheep]
-				if Constants.DEBUG_NEIGHBORS:
-					pygame.draw.line(screen, (0, 0, 255), (self.center.x, self.center.y), (sheep.center.x, sheep.center.y), 1)
+		if Constants.DEBUG_NEIGHBORS:
+			for sheep in self.neighbors:
+				pygame.draw.line(screen, (0, 0, 255), (self.center.x, self.center.y), (sheep.center.x, sheep.center.y), 1)
 
 	def computeAlignment(self):
 		alignment = Vector(0,0)
