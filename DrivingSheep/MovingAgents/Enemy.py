@@ -96,10 +96,10 @@ class Sheep(Agent):
 
 	def update(self, bounds, screen, player, herd):
 
-		## initialize velocity
-		#if pygame.Vector2.length(self.vel) == 0:
-		#	angle = math.acos(random.randrange(-1, 1))
-		#	self.vel = pygame.Vector2(math.cos(angle), math.sin(angle)) * self.spd
+		# initialize velocity
+		if (self.vel).length == 0:
+			angle = math.acos(random.randrange(-1, 1))
+			self.vel = Vector(math.cos(angle), math.sin(angle)) * self.spd
 
 		self.calcNeighbors(herd, screen)
 
