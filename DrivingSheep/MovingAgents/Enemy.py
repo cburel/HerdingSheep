@@ -1,4 +1,5 @@
 from ast import Constant
+from asyncio import constants
 from dis import dis
 import pygame
 from pygame.locals import *
@@ -14,6 +15,8 @@ class Sheep(Agent):
 		self.isFleeing = False
 		self.targetPos = None
 		self.ticks = pygame.time.get_ticks()
+		self.neighbors = []
+		self.neighborCount = 0
 	
 	def switchMode(self):
 		if self.isFleeing:
@@ -41,12 +44,61 @@ class Sheep(Agent):
 		else:
 			return False
 
+	def calcNeighbors(self, herd):
+		self.neighborCount = 0
+		self.neighbors = []
+
+		for sheep in herd:
+			if sheep is not self:
+				if (self.center - sheep.pos).length() < Constants.SHEEP_NEIGHBOR_RADIUS:
+					self.neighborCount += 1
+					self.neighbors += [sheep]
+
+	def computeAlignment(self, herd):
+		alignment = pygame.Vector2(0,0)
+
+		for sheep in self.neighbors:
+			alignment += sheep.vel
+
+		if (self.neighborCount == 0):
+			return alignment
+		
+
+	def computeCohesion(self):
+		cohesion = pygame.Vector2(0,0)
+
+		for sheep in self.neighbors:
+			cohesion += sheep.pos
+
+		if self.neighborCount > 0:
+			pygame.Vector2.scale(cohesion, 1 / self.neighborCount)
+			cohesion -= self.center
+
+		return cohesion
+			
+
+	def computeSeparation(self):
+		separation = pygame.Vector2(0,0)
+
+		for sheep in self.neighbors:
+			separation += self.center - sheep.pos
+
+		if (self.neighborCount == 0):
+			return separation
+		else:
+			pygame.Vector2.scale(separation, 1 / self.neighborCount)
+			return separation
+
 	def update(self, bounds, screen, player):
 
 		## initialize velocity
 		#if pygame.Vector2.length(self.vel) == 0:
 		#	angle = math.acos(random.randrange(-1, 1))
 		#	self.vel = pygame.Vector2(math.cos(angle), math.sin(angle)) * self.spd
+
+		alignment = pygame.Vector2.normalize(self.computeAlignment(self))
+		cohesion = pygame.Vector2.normalize(self.computeCohesion(self))
+		separation = pygame.Vector2.normalize(self.computeSeparation(self))
 		
 		#check if player is close
 		self.isFleeing = self.isPlayerClose(player)
@@ -97,6 +149,11 @@ class Sheep(Agent):
 					
 		# prevent sheep from turning on a dime
 		self.clampTurn(Constants.ENEMY_TURN_SPEED, totalForce)
+
+		totalForce = alignment * Constants.ALIGNMENT_WEIGHT * Constants.ENABLE_ALIGNMENT + separation * Constants.SEPARATION_WEIGHT * Constants.ENABLE_SEPARATION + cohesion * Constants.COHESION_WEIGHT * Constants.ENABLE_COHESION + dirToDogForce * Constants.PLAYER_TO_SHEEP_FORCE * Constants.ENABLE_DOG + boundsForce * Constants.BOUNDARY_FORCE * Constants.ENABLE_BOUNDARIES
+		
+		self.vel += pygame.Vector2.normalize(totalForce)
+
 
 		# update the agent
 		super().update(bounds, screen)
