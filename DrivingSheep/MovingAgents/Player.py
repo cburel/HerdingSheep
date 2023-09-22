@@ -6,6 +6,7 @@ from Agent import Agent
 import Constants
 import math
 import random
+from Vector import Vector
 
 
 class Dog(Agent):
@@ -22,13 +23,14 @@ class Dog(Agent):
 			self.hasTagged = True
 
 			#select new sheep to move towards
-			self.targetAgent = max([e for e in enemies], key=lambda e: self.pos.distance_to(pygame.math.Vector2(e.pos.x, e.pos.y)))
+			self.targetAgent = random.choice(enemies)
+			#self.targetAgent = max([e for e in enemies], key=lambda e: self.pos.distance_to(pygame.math.Vector2(e.pos.x, e.pos.y)))
 
 	def draw(self, screen):
 
 		#toggle line from dog to tracked sheep
 		if Constants.DEBUG_DOG_INFLUENCE:
-			pygame.draw.line(screen, (255, 0, 0), self.center, self.targetAgent.center, 3)
+			pygame.draw.line(screen, (255, 0, 0), (self.center.x, self.center.y), (self.targetAgent.center.x, self.targetAgent.center.y), 3)
 		super().draw(screen)
 
 	def update(self, bounds, screen, enemies: List):
@@ -36,23 +38,24 @@ class Dog(Agent):
 		#get boundary forces
 		boundsForce = self.computeBoundaryForces(bounds, screen) * int(Constants.ENABLE_BOUNDARIES)
 
-		if pygame.Vector2.length(self.vel) == 0:
+		if self.vel.length() == 0:
 			angle = math.acos(random.randrange(-1, 1))
-			self.vel = pygame.Vector2(math.cos(angle), math.sin(angle)) * self.spd
+			self.vel = Vector(math.cos(angle), math.sin(angle)) * self.spd
 
 		# gets appropriate enemy and moves player towards it
 		# shoutout to Rabbid76 on SO for the lambda fn
 		if self.hasTagged == False:
-			self.targetAgent = min([e for e in enemies], key=lambda e: self.pos.distance_to(pygame.math.Vector2(e.pos.x, e.pos.y)))
+			#self.targetAgent = min([e for e in enemies], key=lambda e: self.pos.distance_to(pygame.math.Vector2(e.pos.x, e.pos.y)))
+			self.targetAgent = random.choice(enemies)
 
 		#store the calculated, normalized direction to the sheep being tracked
-		dirToSheep = pygame.Vector2.normalize(self.targetAgent.pos - self.pos)
+		dirToSheep = (self.targetAgent.pos - self.pos).normalize()
 
 		#scale direction by the weight of this force to get applied force and store it
 		dirToSheepForce = dirToSheep * Constants.PLAYER_TO_SHEEP_FORCE
 
 		#take applied force, normalize it, scale it by deltatime and speed to modify dog's velocity
-		dirToSheepForceNorm = pygame.Vector2.normalize(dirToSheepForce)
+		dirToSheepForceNorm = dirToSheepForce.normalize()
 		
 		totalForce = dirToSheepForceNorm + boundsForce
 		self.clampTurn(Constants.PLAYER_TURN_SPEED, totalForce)

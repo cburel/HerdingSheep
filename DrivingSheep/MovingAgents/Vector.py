@@ -16,6 +16,14 @@ class Vector:
 	def __sub__(self,other):
 		return Vector(self.x - other.x, self.y - other.y)
 
+	def __mul__(self, other):
+		if isinstance(other, Vector):
+			return Vector(self.x*other.x, self.y*other.y)
+		if (hasattr(other, "__getitem__")):
+			return Vector(self.x*other[0], self.y*other[1])
+		else:
+			return Vector(self.x*other, self.y*other)
+
 	def dot(self, other):
 		return self.x * other.x + self.y * other.y
 

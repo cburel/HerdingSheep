@@ -7,6 +7,7 @@ import random
 import math
 import Constants
 from Agent import Agent
+from Vector import Vector
 
 class Sheep(Agent):
 
@@ -54,31 +55,33 @@ class Sheep(Agent):
 					self.neighborCount += 1
 					self.neighbors += [sheep]
 
-	def computeAlignment(self, herd):
-		alignment = pygame.Vector2(0,0)
+	def computeAlignment(self):
+		alignment = Vector(0,0)
 
 		for sheep in self.neighbors:
 			alignment += sheep.vel
 
 		if (self.neighborCount == 0):
 			return alignment
+		else:
+			return alignment.scale(1/self.neighborCount)
 		
 
 	def computeCohesion(self):
-		cohesion = pygame.Vector2(0,0)
+		cohesion = Vector(0,0)
 
 		for sheep in self.neighbors:
 			cohesion += sheep.pos
 
 		if self.neighborCount > 0:
-			pygame.Vector2.scale(cohesion, 1 / self.neighborCount)
+			Vector.scale(cohesion, 1 / self.neighborCount)
 			cohesion -= self.center
 
 		return cohesion
 			
 
 	def computeSeparation(self):
-		separation = pygame.Vector2(0,0)
+		separation = Vector(0,0)
 
 		for sheep in self.neighbors:
 			separation += self.center - sheep.pos
@@ -86,27 +89,29 @@ class Sheep(Agent):
 		if (self.neighborCount == 0):
 			return separation
 		else:
-			pygame.Vector2.scale(separation, 1 / self.neighborCount)
+			Vector.scale(separation, 1 / self.neighborCount)
 			return separation
 
-	def update(self, bounds, screen, player):
+	def update(self, bounds, screen, player, herd):
 
 		## initialize velocity
 		#if pygame.Vector2.length(self.vel) == 0:
 		#	angle = math.acos(random.randrange(-1, 1))
 		#	self.vel = pygame.Vector2(math.cos(angle), math.sin(angle)) * self.spd
 
-		alignment = pygame.Vector2.normalize(self.computeAlignment(self))
-		cohesion = pygame.Vector2.normalize(self.computeCohesion(self))
-		separation = pygame.Vector2.normalize(self.computeSeparation(self))
+		self.calcNeighbors(herd)
+
+		alignment = self.computeAlignment().normalize()
+		cohesion = self.computeCohesion().normalize()
+		separation = self.computeSeparation().normalize()
 		
 		#check if player is close
 		self.isFleeing = self.isPlayerClose(player)
 
 		# get forces on the sheep
 		boundsForce = self.computeBoundaryForces(bounds, screen)
-		if boundsForce != pygame.Vector2(0,0):
-			pygame.Vector2.normalize(boundsForce)
+		if boundsForce != Vector(0,0):
+			Vector.normalize(boundsForce)
 
 		totalForce = boundsForce
 
@@ -135,24 +140,24 @@ class Sheep(Agent):
 		if self.isFleeing:
 			#apply flee force
 			#store the calculated, normalized direction to the dog
-			dirToDog = pygame.Vector2.normalize(player.pos - self.pos)
+			dirToDog = (player.pos - self.pos).normalize()
 
 			#scale direction by the weight of this force to get applied force
-			dirToDogForce = -dirToDog * Constants.ENEMY_FLEE_FORCE
+			dirToDogForce = dirToDog * Constants.ENEMY_FLEE_FORCE * -1
 						
 			totalForce = (dirToDogForce * int(Constants.ENABLE_DOG) + (boundsForce * int(Constants.ENABLE_BOUNDARIES)))
 
 			self.calcTrackingVelocity(player)
 			self.vel += totalForce
 		else:
-			self.vel = pygame.Vector2(0,0)
+			self.vel = Vector(0,0)
 					
 		# prevent sheep from turning on a dime
 		self.clampTurn(Constants.ENEMY_TURN_SPEED, totalForce)
 
-		totalForce = alignment * Constants.ALIGNMENT_WEIGHT * Constants.ENABLE_ALIGNMENT + separation * Constants.SEPARATION_WEIGHT * Constants.ENABLE_SEPARATION + cohesion * Constants.COHESION_WEIGHT * Constants.ENABLE_COHESION + dirToDogForce * Constants.PLAYER_TO_SHEEP_FORCE * Constants.ENABLE_DOG + boundsForce * Constants.BOUNDARY_FORCE * Constants.ENABLE_BOUNDARIES
+		#totalForce = alignment * Constants.ALIGNMENT_WEIGHT * Constants.ENABLE_ALIGNMENT + separation * Constants.SEPARATION_WEIGHT * Constants.ENABLE_SEPARATION + cohesion * Constants.COHESION_WEIGHT * Constants.ENABLE_COHESION + dirToDogForce * Constants.PLAYER_TO_SHEEP_FORCE * Constants.ENABLE_DOG + boundsForce * Constants.BOUNDARY_FORCE * Constants.ENABLE_BOUNDARIES
 		
-		self.vel += pygame.Vector2.normalize(totalForce)
+		self.vel += totalForce.normalize()
 
 
 		# update the agent
@@ -161,6 +166,6 @@ class Sheep(Agent):
 	def draw(self, screen):
 		if Constants.DEBUG_DOG_INFLUENCE:
 			if self.isFleeing == True:
-				pygame.draw.line(screen, (0, 0, 255), self.center, self.targetPos, 3)
+				pygame.draw.line(screen, (0, 0, 255), (self.center.x, self.center.y), (self.targetPos.x, self.targetPos.y), 3)
 
 		super().draw(screen)
