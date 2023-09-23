@@ -61,24 +61,28 @@ class Sheep(Agent):
 	def computeAlignment(self):
 		alignment = Vector(0,0)
 
-		for sheep in self.neighbors:
-			alignment += sheep.vel
+		if Constants.ENABLE_ALIGNMENT:
+			for sheep in self.neighbors:
+				alignment += sheep.vel
 
-		if (self.neighborCount == 0):
-			return alignment
-		else:
-			return alignment.scale(1 / self.neighborCount)
+			if (self.neighborCount == 0):
+				return alignment
+			else:
+				return alignment.scale(1 / self.neighborCount)
+
+		return alignment
 		
 
 	def computeCohesion(self):
 		cohesion = Vector(0,0)
 
-		for sheep in self.neighbors:
-			cohesion += sheep.pos
+		if Constants.ENABLE_COHESION:
+			for sheep in self.neighbors:
+				cohesion += sheep.pos
 
-		if self.neighborCount > 0:
-			Vector.scale(cohesion, 1 / self.neighborCount)
-			cohesion -= self.center
+			if self.neighborCount > 0:
+				Vector.scale(cohesion, 1 / self.neighborCount)
+				cohesion -= self.center
 
 		return cohesion
 			
@@ -86,14 +90,17 @@ class Sheep(Agent):
 	def computeSeparation(self):
 		separation = Vector(0,0)
 
-		for sheep in self.neighbors:
-			separation += self.center - sheep.pos
+		if Constants.ENABLE_SEPARATION:
+			for sheep in self.neighbors:
+				separation += self.center - sheep.pos
 
-		if (self.neighborCount == 0):
+			if (self.neighborCount == 0):
+				return separation
+			else:
+				Vector.scale(separation, 1 / self.neighborCount)
 			return separation
-		else:
-			Vector.scale(separation, 1 / self.neighborCount)
-			return separation
+
+		return separation
 
 	def update(self, bounds, screen, player, herd):
 
@@ -114,7 +121,7 @@ class Sheep(Agent):
 		# get forces on the sheep
 		boundsForce = self.computeBoundaryForces(bounds, screen)
 		if boundsForce != Vector(0,0):
-			Vector.normalize(boundsForce)
+			boundsForce.normalize()
 
 		totalForce = boundsForce
 
