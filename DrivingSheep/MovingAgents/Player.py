@@ -23,8 +23,7 @@ class Dog(Agent):
 			self.hasTagged = True
 
 			#select new sheep to move towards
-			self.targetAgent = random.choice(enemies)
-			#self.targetAgent = max([e for e in enemies], key=lambda e: self.pos.distance_to(pygame.math.Vector2(e.pos.x, e.pos.y)))
+			self.targetAgent = max([e for e in enemies], key=lambda e: self.pos.distance_to(Vector(e.pos.x, e.pos.y)))
 
 	def draw(self, screen):
 
@@ -45,8 +44,7 @@ class Dog(Agent):
 		# gets appropriate enemy and moves player towards it
 		# shoutout to Rabbid76 on SO for the lambda fn
 		if self.hasTagged == False:
-			#self.targetAgent = min([e for e in enemies], key=lambda e: self.pos.distance_to(pygame.math.Vector2(e.pos.x, e.pos.y)))
-			self.targetAgent = enemies[0]
+			self.targetAgent = min([e for e in enemies], key=lambda e: self.pos.distance_to(Vector(e.pos.x, e.pos.y)))
 
 		#store the calculated, normalized direction to the sheep being tracked
 		dirToSheep = (self.targetAgent.pos - self.pos).normalize()

@@ -105,7 +105,7 @@ class Sheep(Agent):
 	def update(self, bounds, screen, player, herd):
 
 		# initialize velocity
-		if (self.vel).length == 0:
+		if self.vel.length == 0:
 			angle = math.acos(random.randrange(-1, 1))
 			self.vel = Vector(math.cos(angle), math.sin(angle)) * self.spd
 
@@ -123,30 +123,6 @@ class Sheep(Agent):
 		if boundsForce != Vector(0,0):
 			boundsForce.normalize()
 
-		totalForce = boundsForce
-
-		## wander if player isn't close
-		#if not self.isFleeing:
-
-		#	if self.updateDirectionTime() == True:
-		#		theta = math.radians(random.randrange(-100, 100) / 100)
-
-		#		pickTurn = random.randint(0, 100)
-		#		if pickTurn < 50:
-		#			theta += 0
-		#		else:
-		#			theta += 180
-
-		#		#apply wander force			
-		#		wanderDir = pygame.Vector2.normalize(self.vel) + pygame.Vector2(math.cos(theta), math.sin(theta))
-		#		wanderDirForce = wanderDir * Constants.ENEMY_WANDER_FORCE
-		#		wanderDirForceNorm = pygame.Vector2.normalize(wanderDirForce)
-
-		#		totalForce = wanderDirForceNorm + (boundsForce * int(Constants.ENABLE_BOUNDARIES))
-		#	else:
-		#		totalForce = boundsForce * int(Constants.ENABLE_BOUNDARIES)
-
-		# otherwise, flee
 		if self.isFleeing:
 			#apply flee force
 			#store the calculated, normalized direction to the dog
@@ -154,19 +130,17 @@ class Sheep(Agent):
 
 			#scale direction by the weight of this force to get applied force
 			dirToDogForce = dirToDog * Constants.ENEMY_FLEE_FORCE * -1
-						
-			#totalForce = (dirToDogForce * int(Constants.ENABLE_DOG) + (boundsForce * int(Constants.ENABLE_BOUNDARIES)))
 
 			self.calcTrackingVelocity(player)
-			self.vel += totalForce
 		else:
 			self.vel = Vector(0,0)
 			dirToDogForce = Vector(0,0)
 					
+		
+		totalForce = alignment * Constants.ALIGNMENT_WEIGHT * Constants.ENABLE_ALIGNMENT + separation * Constants.SEPARATION_WEIGHT * Constants.ENABLE_SEPARATION + cohesion * Constants.COHESION_WEIGHT * Constants.ENABLE_COHESION + dirToDogForce * Constants.PLAYER_TO_SHEEP_FORCE * Constants.ENABLE_DOG + boundsForce * Constants.BOUNDARY_FORCE * Constants.ENABLE_BOUNDARIES
+
 		# prevent sheep from turning on a dime
 		self.clampTurn(Constants.ENEMY_TURN_SPEED, totalForce)
-
-		totalForce = alignment * Constants.ALIGNMENT_WEIGHT * Constants.ENABLE_ALIGNMENT + separation * Constants.SEPARATION_WEIGHT * Constants.ENABLE_SEPARATION + cohesion * Constants.COHESION_WEIGHT * Constants.ENABLE_COHESION + dirToDogForce * Constants.PLAYER_TO_SHEEP_FORCE * Constants.ENABLE_DOG + boundsForce * Constants.BOUNDARY_FORCE * Constants.ENABLE_BOUNDARIES
 		
 		self.vel += totalForce.normalize()
 

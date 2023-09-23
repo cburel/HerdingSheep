@@ -40,3 +40,8 @@ class Vector:
 			return Vector(self.x / len, self.y / len)
 		else:
 			return Vector(self.x, self.y)
+
+	# returns euclidean distance between 2 vectors
+	def distance_to(self, other):
+		dist = math.sqrt((self.x - other.x) ** 2 + (self.y - other.y) ** 2)
+		return dist
