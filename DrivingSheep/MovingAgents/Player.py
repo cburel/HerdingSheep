@@ -54,7 +54,7 @@ class Dog(Agent):
 		dirToSheepForce = dirToSheep * Constants.PLAYER_TO_SHEEP_FORCE
 
 		#take applied force, normalize it, scale it by deltatime and speed to modify dog's velocity
-		dirToSheepForceNorm = dirToSheepForce.normalize()
+		dirToSheepForceNorm = dirToSheepForce.normalize().scale(Constants.DELTATIME * self.spd)
 		
 		totalForce = dirToSheepForceNorm + boundsForce
 		self.clampTurn(Constants.PLAYER_TURN_SPEED, totalForce)

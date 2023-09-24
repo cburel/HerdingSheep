@@ -27,7 +27,7 @@ def handleDebugging():
 	events = pygame.event.get()
 	for event in events:
 
-		#if the player quits the game
+		#if the player quits the game. if this is in update it breaks lol
 		if event.type == QUIT:
 			pygame.quit()
 			quit()
