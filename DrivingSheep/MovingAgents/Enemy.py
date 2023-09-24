@@ -105,7 +105,7 @@ class Sheep(Agent):
 	def update(self, bounds, screen, player, herd):
 
 		# initialize velocity
-		if self.vel.length == 0:
+		if self.vel.length() == 0:
 			angle = math.acos(random.randrange(-1, 1))
 			self.vel = Vector(math.cos(angle), math.sin(angle)) * self.spd
 
@@ -133,7 +133,6 @@ class Sheep(Agent):
 
 			self.calcTrackingVelocity(player)
 		else:
-			self.vel = Vector(0,0)
 			dirToDogForce = Vector(0,0)
 					
 		

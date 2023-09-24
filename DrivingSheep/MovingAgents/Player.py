@@ -37,6 +37,7 @@ class Dog(Agent):
 		#get boundary forces
 		boundsForce = self.computeBoundaryForces(bounds, screen) * int(Constants.ENABLE_BOUNDARIES)
 
+		#initialize velocity
 		if self.vel.length() == 0:
 			angle = math.acos(random.randrange(-1, 1))
 			self.vel = Vector(math.cos(angle), math.sin(angle)) * self.spd

@@ -32,7 +32,7 @@ class Vector:
 		return Vector(self.x * scalar, self.y * scalar)
 
 	def length(self):
-		return math.sqrt(self.dot(self))
+		return math.sqrt(self.x**2 + self.y**2)
 
 	def normalize(self):
 		len = self.length()
@@ -43,5 +43,4 @@ class Vector:
 
 	# returns euclidean distance between 2 vectors
 	def distance_to(self, other):
-		dist = math.sqrt((self.x - other.x) ** 2 + (self.y - other.y) ** 2)
-		return dist
+		return math.sqrt((self.x - other.x) ** 2 + (self.y - other.y) ** 2)
